@@ -18,13 +18,13 @@ public final class RoundedButton: UIButton {
         }
     }
     
-    var style: Style = .filled(button: .label, text: .systemBackground) {
+    public var style: Style = .filled(button: .label, text: .systemBackground) {
         didSet {
             didUpdateStyle()
         }
     }
     
-    var title: String = "" {
+    public var title: String = "" {
         didSet {
             self.setTitle(title, for: .normal)
         }
@@ -44,12 +44,12 @@ public final class RoundedButton: UIButton {
     
     
     // MARK: Life cycle
-    override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }
