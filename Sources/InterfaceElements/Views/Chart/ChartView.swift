@@ -12,7 +12,7 @@ public final class ChartView: UIView {
     
     
     // MARK: Interface
-    func update(with bars: [ChartBar]) {
+    public func update(with bars: [ChartBar]) {
         self.bars = bars
         self.collectionView.reloadData()
     }
