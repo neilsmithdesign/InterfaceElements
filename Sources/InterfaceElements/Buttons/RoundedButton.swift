@@ -42,6 +42,42 @@ public final class RoundedButton: UIButton {
         }
     }
     
+    public func setLoading() {
+        isLoading = true
+        loadingContainerView.frame = self.bounds
+        self.addSubview(loadingContainerView)
+        self.bringSubviewToFront(loadingContainerView)
+        self.setTitle(nil, for: .normal)
+        configureLoadingIndicator()
+    }
+    
+    public func stopLoading() {
+        isLoading = false
+        self.setTitle(title, for: .normal)
+        loadingContainerView.subviews.forEach { $0.removeFromSuperview() }
+        loadingContainerView.removeFromSuperview()
+    }
+    
+    public private (set) var isLoading: Bool = false
+    
+    
+    // MARK: Subviews
+    private var loadingContainerView: UIView = {
+        let v = UIView()
+        return v
+    }()
+
+    private func configureLoadingIndicator() {
+        let spinner = UIActivityIndicatorView(style: .white)
+        spinner.color = self.style.textColor
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        loadingContainerView.addSubview(spinner)
+        spinner.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        spinner.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+        spinner.hidesWhenStopped = true
+        spinner.startAnimating()
+    }
+    
     
     // MARK: Life cycle
     override public init(frame: CGRect) {
