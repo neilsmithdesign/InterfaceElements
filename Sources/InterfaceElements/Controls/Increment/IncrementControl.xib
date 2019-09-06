@@ -22,7 +22,7 @@
                 <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="xwe-ao-nin">
                     <rect key="frame" x="0.0" y="8" width="144" height="32"/>
                     <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xqt-rD-GoI" customClass="CircleButton" customModule="Spinning" customModuleProvider="target">
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xqt-rD-GoI" customClass="CircleButton" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
                             <constraints>
                                 <constraint firstAttribute="width" secondItem="xqt-rD-GoI" secondAttribute="height" multiplier="1:1" id="Q3j-rx-uOU"/>
@@ -38,7 +38,7 @@
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yex-MA-RUg" customClass="CircleButton" customModule="Spinning" customModuleProvider="target">
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yex-MA-RUg" customClass="CircleButton" customModuleProvider="target">
                             <rect key="frame" x="112" y="0.0" width="32" height="32"/>
                             <constraints>
                                 <constraint firstAttribute="width" secondItem="yex-MA-RUg" secondAttribute="height" multiplier="1:1" id="8yK-LT-xl4"/>
