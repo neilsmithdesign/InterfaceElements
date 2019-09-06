@@ -86,6 +86,10 @@ public extension IncrementControl {
     struct ViewModel {
         let text: String
         let tint: UIColor
+        public init(text: String, tint: UIColor) {
+            self.text = text
+            self.tint = tint
+        }
     }
     
 }
