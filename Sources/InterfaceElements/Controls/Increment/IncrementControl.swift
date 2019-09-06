@@ -8,50 +8,100 @@
 import UIKit
 import Extensions
 
-public final class IncrementControl: NibView {
+public final class IncrementControl: UIView {
     
     
     // MARK: Interface
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
+    }
+    
+    public required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+    }
+    
     public var viewModel: ViewModel? {
         didSet {
             guard let vm = viewModel else { return }
-            minusButton?.color = vm.tint
-            plusButton?.color = vm.tint
+            minusButton.color = vm.tint
+            plusButton.color = vm.tint
             self.text = vm.text
         }
     }
     
     public var text: String = "" {
         didSet {
-            label?.text = text
+            label.text = text
         }
     }
 
     public var onSelection: ((Direction) -> Void)?
     
     
-    // MARK: Outlets
-    @IBOutlet private weak var minusButton: CircleButton! {
-        didSet {
-            configure(minusButton, for: .minus)
-        }
+    // MARK: Subviews
+    private lazy var minusButton: CircleButton = self.configured(for: .minus)
+    
+    private lazy var plusButton: CircleButton = self.configured(for: .plus)
+    
+    private lazy var label: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.textColor = .label
+        label.text = text
+        label.textAlignment = .center
+        return label
+    }()
+    
+    private lazy var stackView: UIStackView = {
+        let sv = UIStackView(
+            arrangedSubviews: [
+                self.minusButton,
+                self.label,
+                self.plusButton
+            ]
+        )
+        sv.translatesAutoresizingMaskIntoConstraints = false
+        sv.axis = .horizontal
+        sv.alignment = .center
+        sv.distribution = .fill
+        sv.spacing = 8
+        return sv
+    }()
+    
+    
+    private func setup() {
+        constrain(stackView, to: self)
+        constrainButton(minusButton)
+        label.widthAnchor.constraint(equalToConstant: 64.0).isActive = true
+        constrainButton(plusButton)
     }
     
-    @IBOutlet private weak var label: UILabel! {
-        didSet {
-            label.textColor = .label
-            label.text = text
-        }
+    private func configured(for direction: Direction) -> CircleButton {
+        let button = CircleButton(
+            dimension: 32.0,
+            iconImage: direction.iconImage,
+            color: self.viewModel?.tint ?? .label
+        )
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.tag = direction.rawValue
+        button.addTarget(self, action: #selector(didSelect(_:)), for: .touchUpInside)
+        return button
     }
     
-    @IBOutlet private weak var plusButton: CircleButton! {
-        didSet {
-            configure(plusButton, for: .plus)
-        }
+    private func constrainButton(_ button: CircleButton) {
+        button.heightAnchor.constraint(equalToConstant: 32.0).isActive = true
+        button.heightAnchor.constraint(equalTo: button.widthAnchor, multiplier: 1).isActive = true
     }
     
+}
+
+
+// MARK: - Target-action
+extension IncrementControl {
     
-    // MARK: Target-action
     @objc private func didSelect(_ button: CircleButton) {
         guard let direction = Direction(rawValue: button.tag) else { return }
         onSelection?(direction)
@@ -60,17 +110,8 @@ public final class IncrementControl: NibView {
 }
 
 
-// MARK: - Helpers
+// MARK: - Supporting types
 public extension IncrementControl {
-    
-    private func configure(_ button: CircleButton, for direction: Direction) {
-        button.tag = direction.rawValue
-        button.iconImage = direction.iconImage
-        button.addTarget(self, action: #selector(didSelect(_:)), for: .touchUpInside)
-        guard let vm = viewModel else { return }
-        button.color = vm.tint
-    }
-    
     
     enum Direction: Int {
         case minus = 0
