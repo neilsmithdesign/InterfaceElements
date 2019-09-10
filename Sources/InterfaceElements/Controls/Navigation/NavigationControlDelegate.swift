@@ -10,5 +10,6 @@ import Foundation
 public protocol NavigationControlDelegate: AnyObject {
     func navigationControl(_ navigationControl: NavigationControl, titleForButtonAt position: NavigationControl.ButtonPosition) -> String?
     func navigationControl(_ navigationControl: NavigationControl, stateForButtonAt position: NavigationControl.ButtonPosition) -> NavigationControl.ButtonState?
+    func navigationControl(_ navigationControl: NavigationControl, styleForButtonAt position: NavigationControl.ButtonPosition) -> RoundedButton.Style?
     func navigationControl(_ navigationControl: NavigationControl, didTapButtonAt position: NavigationControl.ButtonPosition)
 }

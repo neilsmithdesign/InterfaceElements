@@ -17,21 +17,9 @@ public final class NavigationControl: UIView {
         refresh(rightButton, position: .right)
     }
     
-    private lazy var leftButton: RoundedButton = {
-        let btn = RoundedButton(frame: .zero)
-        btn.shape = .pill
-        btn.style = .outlined(.label)
-        btn.addTarget(self, action: #selector(didTapLeft), for: .touchUpInside)
-        return btn
-    }()
+    private lazy var leftButton: RoundedButton = self.create(buttonAt: .left)
     
-    private lazy var rightButton: RoundedButton = {
-        let btn = RoundedButton(frame: .zero)
-        btn.shape = .pill
-        btn.style = .outlined(.label)
-        btn.addTarget(self, action: #selector(didTapRight), for: .touchUpInside)
-        return btn
-    }()
+    private lazy var rightButton: RoundedButton = self.create(buttonAt: .right)
     
     private lazy var stackView: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [self.leftButton, self.rightButton])
@@ -84,6 +72,7 @@ extension NavigationControl {
     
     private func refresh(_ button: RoundedButton, position: ButtonPosition) {
         button.title = delegate?.navigationControl(self, titleForButtonAt: position) ?? ""
+        button.style = delegate?.navigationControl(self, styleForButtonAt: position) ?? .outlined(.label)
         if let state = delegate?.navigationControl(self, stateForButtonAt: position) {
             button.isHidden = false
             switch state {
@@ -92,6 +81,17 @@ extension NavigationControl {
             case .enabled: button.isEnabled = true
             }
         }
+    }
+    
+    private func create(buttonAt position: ButtonPosition) -> RoundedButton {
+        let btn = RoundedButton(frame: .zero)
+        btn.shape = .pill
+        btn.style = self.delegate?.navigationControl(self, styleForButtonAt: position) ?? .outlined(.label)
+        switch position {
+        case .left: btn.addTarget(self, action: #selector(didTapLeft), for: .touchUpInside)
+        case .right: btn.addTarget(self, action: #selector(didTapRight), for: .touchUpInside)
+        }
+        return btn
     }
     
 }

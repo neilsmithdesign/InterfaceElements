@@ -68,7 +68,7 @@ public final class RoundedButton: UIButton {
     }()
 
     private func configureLoadingIndicator() {
-        let spinner = UIActivityIndicatorView(style: .white)
+        let spinner = UIActivityIndicatorView(style: .medium)
         spinner.color = self.style.textColor
         spinner.translatesAutoresizingMaskIntoConstraints = false
         loadingContainerView.addSubview(spinner)
