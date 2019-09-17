@@ -16,11 +16,14 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
             updateFrame()
         }
     }
+    
     var color: UIColor = .clear {
         didSet {
             barView.backgroundColor = color
         }
     }
+    
+    var onTouch: ((ChartView.Touch) -> Void)?
     
     
     // MARK: Overrides
@@ -39,6 +42,13 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
             .layerMinXMinYCorner
         ]
         return v
+    }()
+    
+    
+    // MARK: Gestures
+    private lazy var tapGesture: UITapGestureRecognizer = {
+        let tg = UITapGestureRecognizer(target: self, action: #selector(handle(_:)))
+        return tg
     }()
     
 
@@ -63,6 +73,7 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
     private func setup() {
         self.backgroundColor = .clear
         self.addSubview(barView)
+        self.addGestureRecognizer(tapGesture)
     }
 
     private var barViewFrame: CGRect {
@@ -73,6 +84,16 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
     private func updateFrame() {
         barView.frame = barViewFrame
     }
+    
+    @objc private func handle(_ gesture: UITapGestureRecognizer) {
+        switch gesture.state {
+        case .began: onTouch?(.down)
+        case .cancelled, .failed, .ended: onTouch?(.up)
+        default: return
+        }
+    }
+    
+    
     
 }
 

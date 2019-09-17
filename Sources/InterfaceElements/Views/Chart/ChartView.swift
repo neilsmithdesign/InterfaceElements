@@ -12,9 +12,16 @@ public final class ChartView: UIView {
     
     
     // MARK: Interface
+    public weak var delegate: ChartViewDelegate?
+    
     public func update(with bars: [ChartBar]) {
         self.bars = bars
         self.collectionView.reloadData()
+    }
+    
+    public enum Touch {
+        case down
+        case up
     }
 
 
@@ -74,7 +81,14 @@ extension ChartView: UICollectionViewDataSource {
         let bar = bars[indexPath.item]
         cell.value = normalizedY(for: bar)
         cell.color = bar.color
+        cell.onTouch = { [weak self] direction in
+            self?.didTouch(barAt: indexPath, direction: direction)
+        }
         return cell
+    }
+    
+    private func didTouch(barAt indexPath: IndexPath, direction: Touch) {
+        delegate?.chartView(self, didTouch: direction, forBarAt: indexPath)
     }
     
 }
