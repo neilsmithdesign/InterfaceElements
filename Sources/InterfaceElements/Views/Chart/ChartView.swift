@@ -18,11 +18,6 @@ public final class ChartView: UIView {
         self.bars = bars
         self.collectionView.reloadData()
     }
-    
-    public enum Touch {
-        case down
-        case up
-    }
 
 
     // MARK: Private
@@ -44,7 +39,19 @@ public final class ChartView: UIView {
         cv.backgroundColor = .clear
         return cv
     }()
-
+    
+    
+    private lazy var panGesture: UIPanGestureRecognizer = {
+        let pgr = UIPanGestureRecognizer(target: self, action: #selector(handle(_:)))
+        return pgr
+    }()
+    
+    private var currentlyActiveIndexPath: IndexPath? {
+        didSet {
+            delegate?.chartView(self, didUpdateCurrentlyActiveBarAt: currentlyActiveIndexPath)
+        }
+    }
+    
 
     // MARK: Init
     public init(bars: [ChartBar], frame: CGRect) {
@@ -60,6 +67,7 @@ public final class ChartView: UIView {
     
     private func setup() {
         constrain(collectionView, to: self)
+        collectionView.addGestureRecognizer(panGesture)
     }
 
 }
@@ -81,14 +89,7 @@ extension ChartView: UICollectionViewDataSource {
         let bar = bars[indexPath.item]
         cell.value = normalizedY(for: bar)
         cell.color = bar.color
-        cell.onTouch = { [weak self] direction in
-            self?.didTouch(barAt: indexPath, direction: direction)
-        }
         return cell
-    }
-    
-    private func didTouch(barAt indexPath: IndexPath, direction: Touch) {
-        delegate?.chartView(self, didTouch: direction, forBarAt: indexPath)
     }
     
 }
@@ -139,6 +140,56 @@ extension ChartView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayou
 
     private var spacing: CGFloat {
         return 1
+    }
+    
+}
+
+
+extension ChartView {
+    
+    @objc private func handle(_ gesture: UIPanGestureRecognizer) {
+        guard let indexPath = collectionView.indexPathForItem(at: gesture.location(in: collectionView)) else { return }
+        switch gesture.state {
+        case .began: didBeginPanning(at: indexPath)
+        case .changed: didPan(at: indexPath)
+        case .cancelled, .failed, .ended: didEndPanning(at: indexPath)
+        default: return
+        }
+    }
+    
+    private func didBeginPanning(at indexPath: IndexPath) {
+        currentlyActiveIndexPath = indexPath
+        setAllCells(.dimmed)
+        set(cellAt: indexPath, state: .active)
+    }
+    
+    private func didPan(at indexPath: IndexPath) {
+        guard indexPath != currentlyActiveIndexPath else { return }
+        currentlyActiveIndexPath = indexPath
+        setAllCells(.dimmed)
+        set(cellAt: indexPath, state: .active)
+    }
+    
+    private func didEndPanning(at indexPath: IndexPath) {
+        currentlyActiveIndexPath = nil
+        setAllCells(.active)
+    }
+    
+    enum CellState {
+        case active
+        case dimmed
+    }
+    
+    private func setAllCells(_ state: CellState) {
+        for cell in collectionView.visibleCells {
+            guard let cell = cell as? ChartBarCollectionViewCell else { continue }
+            cell.state = state
+        }
+    }
+    
+    private func set(cellAt indexPath: IndexPath, state: CellState) {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? ChartBarCollectionViewCell else { return }
+        cell.state = state
     }
     
 }

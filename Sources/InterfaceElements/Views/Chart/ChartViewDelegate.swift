@@ -8,5 +8,5 @@
 import UIKit
 
 public protocol ChartViewDelegate: AnyObject {
-    func chartView(_ chartView: ChartView, didTouch direction: ChartView.Touch, forBarAt indexPath: IndexPath)
+    func chartView(_ chartView: ChartView, didUpdateCurrentlyActiveBarAt indexPath: IndexPath?)
 }

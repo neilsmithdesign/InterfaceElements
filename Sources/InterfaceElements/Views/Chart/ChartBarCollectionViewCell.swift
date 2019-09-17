@@ -23,8 +23,12 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    var onTouch: ((ChartView.Touch) -> Void)?
-    
+    var state: ChartView.CellState = .active {
+        didSet {
+            barView.alpha = state == .active ? 1.0 : 0.2
+        }
+    }
+        
     
     // MARK: Overrides
     override var reuseIdentifier: String? {
@@ -75,20 +79,6 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
     
     private func updateFrame() {
         barView.frame = barViewFrame
-    }
-    
-    
-    // MARK: Touch handling
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        onTouch?(.down)
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        onTouch?(.up)
-    }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        onTouch?(.up)
     }
     
     
