@@ -42,8 +42,11 @@ public final class ChartView: UIView {
     
     
     private lazy var panGesture: UIPanGestureRecognizer = {
-        let pgr = UIPanGestureRecognizer(target: self, action: #selector(handle(_:)))
-        return pgr
+        return UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+    }()
+    
+    private lazy var tapGesture: UILongPressGestureRecognizer = {
+        return UILongPressGestureRecognizer(target: self, action: #selector(handleTap(_:)))
     }()
     
     private var currentlyActiveIndexPath: IndexPath? {
@@ -68,6 +71,7 @@ public final class ChartView: UIView {
     private func setup() {
         constrain(collectionView, to: self)
         collectionView.addGestureRecognizer(panGesture)
+        collectionView.addGestureRecognizer(tapGesture)
     }
 
 }
@@ -147,7 +151,15 @@ extension ChartView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayou
 
 extension ChartView {
     
-    @objc private func handle(_ gesture: UIPanGestureRecognizer) {
+    @objc private func handleTap(_ gesture: UILongPressGestureRecognizer) {
+        guard let indexPath = collectionView.indexPathForItem(at: gesture.location(in: collectionView)) else { return }
+        switch gesture.state {
+        case .began: didBeginPanning(at: indexPath)
+        default: return
+        }
+    }
+    
+    @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
         guard let indexPath = collectionView.indexPathForItem(at: gesture.location(in: collectionView)) else { return }
         switch gesture.state {
         case .began: didBeginPanning(at: indexPath)
