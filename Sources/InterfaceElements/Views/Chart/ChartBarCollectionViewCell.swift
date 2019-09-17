@@ -44,13 +44,6 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
         return v
     }()
     
-    
-    // MARK: Gestures
-    private lazy var tapGesture: UITapGestureRecognizer = {
-        let tg = UITapGestureRecognizer(target: self, action: #selector(handle(_:)))
-        return tg
-    }()
-    
 
     // MARK: Life cycle
     override init(frame: CGRect) {
@@ -73,7 +66,6 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
     private func setup() {
         self.backgroundColor = .clear
         self.addSubview(barView)
-        self.addGestureRecognizer(tapGesture)
     }
 
     private var barViewFrame: CGRect {
@@ -85,14 +77,19 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
         barView.frame = barViewFrame
     }
     
-    @objc private func handle(_ gesture: UITapGestureRecognizer) {
-        switch gesture.state {
-        case .began: onTouch?(.down)
-        case .cancelled, .failed, .ended: onTouch?(.up)
-        default: return
-        }
+    
+    // MARK: Touch handling
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        onTouch?(.down)
     }
     
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        onTouch?(.up)
+    }
+    
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        onTouch?(.up)
+    }
     
     
 }
