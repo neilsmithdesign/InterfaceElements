@@ -42,11 +42,15 @@ public final class ChartView: UIView {
     
     
     private lazy var panGesture: UIPanGestureRecognizer = {
-        return UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+        let g = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+        g.delegate = self
+        return g
     }()
     
     private lazy var tapGesture: UILongPressGestureRecognizer = {
-        return UILongPressGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        let g = UILongPressGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        g.delegate = self
+        return g
     }()
     
     private var currentlyActiveIndexPath: IndexPath? {
@@ -149,12 +153,17 @@ extension ChartView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayou
 }
 
 
-extension ChartView {
+extension ChartView: UIGestureRecognizerDelegate {
+    
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
     
     @objc private func handleTap(_ gesture: UILongPressGestureRecognizer) {
         guard let indexPath = collectionView.indexPathForItem(at: gesture.location(in: collectionView)) else { return }
         switch gesture.state {
-        case .began: didBeginPanning(at: indexPath)
+        case .began: didBeginGesture(at: indexPath)
+        case .cancelled, .failed, .ended: didEndGesture(at: indexPath)
         default: return
         }
     }
@@ -162,14 +171,14 @@ extension ChartView {
     @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
         guard let indexPath = collectionView.indexPathForItem(at: gesture.location(in: collectionView)) else { return }
         switch gesture.state {
-        case .began: didBeginPanning(at: indexPath)
+        case .began: didBeginGesture(at: indexPath)
         case .changed: didPan(at: indexPath)
-        case .cancelled, .failed, .ended: didEndPanning(at: indexPath)
+        case .cancelled, .failed, .ended: didEndGesture(at: indexPath)
         default: return
         }
     }
     
-    private func didBeginPanning(at indexPath: IndexPath) {
+    private func didBeginGesture(at indexPath: IndexPath) {
         currentlyActiveIndexPath = indexPath
         setAllCells(.dimmed)
         set(cellAt: indexPath, state: .active)
@@ -182,7 +191,7 @@ extension ChartView {
         set(cellAt: indexPath, state: .active)
     }
     
-    private func didEndPanning(at indexPath: IndexPath) {
+    private func didEndGesture(at indexPath: IndexPath) {
         currentlyActiveIndexPath = nil
         setAllCells(.active)
     }
