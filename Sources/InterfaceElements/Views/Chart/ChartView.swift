@@ -49,6 +49,7 @@ public final class ChartView: UIView {
     
     private lazy var tapGesture: UILongPressGestureRecognizer = {
         let g = UILongPressGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        g.minimumPressDuration = 0.05
         g.delegate = self
         return g
     }()
