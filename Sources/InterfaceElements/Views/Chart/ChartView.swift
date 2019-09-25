@@ -18,6 +18,10 @@ public final class ChartView: UIView {
         self.bars = bars
         self.collectionView.reloadData()
     }
+    
+    public func invalidateLayout() {
+        collectionView.collectionViewLayout.invalidateLayout()
+    }
 
 
     // MARK: Private
