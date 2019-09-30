@@ -21,6 +21,10 @@ public final class ChartView: UIView {
     
     public func invalidateLayout() {
         collectionView.collectionViewLayout.invalidateLayout()
+        for cell in collectionView.visibleCells {
+            guard let c = cell as? ChartBarCollectionViewCell else { continue }
+            c.refreshBarFrame()
+        }
     }
 
 

@@ -28,6 +28,10 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
             barView.alpha = state == .active ? 1.0 : 0.2
         }
     }
+    
+    func refreshBarFrame() {
+        updateFrame()
+    }
         
     
     // MARK: Overrides
