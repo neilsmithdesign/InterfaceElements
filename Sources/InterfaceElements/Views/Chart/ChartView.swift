@@ -23,8 +23,9 @@ public final class ChartView: UIView {
         }
     }
     
-    public func update(cellAt index: Int, state: CellState) {
+    public func update(cellAt index: Int) {
         guard let cell = collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? ChartBarCollectionViewCell else { return }
+        guard let state = dataSource?.state(forBarAt: index) else { return }
         cell.state = state
     }
     
