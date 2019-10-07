@@ -11,7 +11,9 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
     
     
     // MARK: Interface
-    var value: Double = 0 {
+    
+    /// The proportion of the cell height which is to be occupied by the bar.
+    var yValue: Double = 0 {
         didSet {
             updateFrame()
         }
@@ -23,9 +25,15 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    var state: ChartView.CellState = .active {
+    var state: ChartView.CellState = .active(1) {
         didSet {
-            barView.alpha = state == .active ? 1.0 : 0.2
+            switch state {
+            case .active(let xValue):
+                barView.isHidden = false
+                barView.frame = barViewFrame
+            case .dimmed:
+                barView.isHidden = true
+            }
         }
     }
     
@@ -44,15 +52,33 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
     private lazy var barView: UIView = {
         let v = UIView()
         v.backgroundColor = self.color
+        return v
+    }()
+    
+    private lazy var backingBarView: UIView = {
+        let v = makeRoundedView()
+        v.backgroundColor = self.color
+        return v
+    }()
+    
+    private lazy var barMaskView: UIView = {
+        let v = makeRoundedView()
+        v.backgroundColor = .black
+        return v
+    }()
+    
+    
+    private func makeRoundedView() -> UIView {
+        let v = UIView()
         v.layer.cornerRadius = 2
+        v.layer.masksToBounds = true
         v.layer.maskedCorners = [
             .layerMaxXMinYCorner,
             .layerMinXMinYCorner
         ]
         return v
-    }()
+    }
     
-
     // MARK: Life cycle
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -66,25 +92,37 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        barView.frame = barViewFrame
+        updateFrame()
     }
     
     
     // MARK: Helpers
     private func setup() {
         self.backgroundColor = .clear
-        self.addSubview(barView)
+        self.addSubview(backingBarView)
+        backingBarView.addSubview(barView)
+        barView.mask = barMaskView
     }
 
-    private var barViewFrame: CGRect {
-        let y = self.bounds.height * CGFloat(value)
+    private var backingBarViewFrame: CGRect {
+        let y = self.bounds.height * CGFloat(yValue)
         return .init(x: 0, y: y, width: self.bounds.width, height: self.bounds.height - y)
     }
     
     private func updateFrame() {
+        backingBarView.frame = backingBarViewFrame
+        barMaskView.frame = backingBarViewFrame
         barView.frame = barViewFrame
     }
     
+    private var barViewFrame: CGRect {
+        switch state {
+        case .dimmed: return .zero
+        case .active(let xValue):
+            let width = backingBarViewFrame.width * CGFloat(xValue)
+            return .init(x: 0, y: 0, width: width, height: backingBarViewFrame.height)
+        }
+    }
     
 }
 

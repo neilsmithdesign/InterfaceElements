@@ -12,11 +12,20 @@ public final class ChartView: UIView {
     
     
     // MARK: Interface
+    public weak var dataSource: ChartViewDataSource?
+    
     public weak var delegate: ChartViewDelegate?
     
-    public func update(with bars: [ChartBar]) {
-        self.bars = bars
-        self.collectionView.reloadData()
+    public var mode: Mode = .interactive {
+        didSet {
+            collectionView.reloadData()
+            configureGestures()
+        }
+    }
+    
+    public func update(cellAt index: Int, state: CellState) {
+        guard let cell = collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? ChartBarCollectionViewCell else { return }
+        cell.state = state
     }
     
     public func invalidateLayout() {
@@ -26,10 +35,24 @@ public final class ChartView: UIView {
             c.refreshBarFrame()
         }
     }
+    
+    
+    // MARK: Public types
+    public enum Mode {
+        case interactive
+        case progress
+    }
+    
+    public enum CellState {
+        case active(Double)
+        case dimmed
+    }
 
 
     // MARK: Private
-    private var bars: [ChartBar] = []
+    private var bars: [ChartBar] {
+        return dataSource?.bars(for: self) ?? []
+    }
     
     
     // MARK: Subviews
@@ -70,9 +93,8 @@ public final class ChartView: UIView {
     
 
     // MARK: Init
-    public init(bars: [ChartBar], frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
-        self.update(with: bars)
         setup()
     }
     
@@ -82,9 +104,22 @@ public final class ChartView: UIView {
     }
     
     private func setup() {
+        buildViewHierarchy()
+        configureGestures()
+    }
+    
+    private func buildViewHierarchy() {
         constrain(collectionView, to: self)
-        collectionView.addGestureRecognizer(panGesture)
-        collectionView.addGestureRecognizer(tapGesture)
+    }
+    
+    private func configureGestures() {
+        if mode == .interactive {
+            collectionView.addGestureRecognizer(panGesture)
+            collectionView.addGestureRecognizer(tapGesture)
+        } else {
+            collectionView.removeGestureRecognizer(panGesture)
+            collectionView.removeGestureRecognizer(tapGesture)
+        }
     }
 
 }
@@ -104,8 +139,11 @@ extension ChartView: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChartBarCollectionViewCell.reuseID, for: indexPath) as! ChartBarCollectionViewCell
         let bar = bars[indexPath.item]
-        cell.value = normalizedY(for: bar)
+        cell.yValue = normalizedY(for: bar)
         cell.color = bar.color
+        if mode == .progress, let state = dataSource?.state(forBarAt: indexPath.item) {
+            cell.state = state
+        }
         return cell
     }
     
@@ -161,7 +199,7 @@ extension ChartView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayou
     
 }
 
-
+// MARK: - Interactive mode
 extension ChartView: UIGestureRecognizerDelegate {
     
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -190,24 +228,19 @@ extension ChartView: UIGestureRecognizerDelegate {
     private func didBeginGesture(at indexPath: IndexPath) {
         currentlyActiveIndexPath = indexPath
         setAllCells(.dimmed)
-        set(cellAt: indexPath, state: .active)
+        set(cellAt: indexPath, state: .active(1))
     }
     
     private func didPan(at indexPath: IndexPath) {
         guard indexPath != currentlyActiveIndexPath else { return }
         currentlyActiveIndexPath = indexPath
         setAllCells(.dimmed)
-        set(cellAt: indexPath, state: .active)
+        set(cellAt: indexPath, state: .active(1))
     }
     
     private func didEndGesture(at indexPath: IndexPath) {
         currentlyActiveIndexPath = nil
-        setAllCells(.active)
-    }
-    
-    enum CellState {
-        case active
-        case dimmed
+        setAllCells(.active(1))
     }
     
     private func setAllCells(_ state: CellState) {
