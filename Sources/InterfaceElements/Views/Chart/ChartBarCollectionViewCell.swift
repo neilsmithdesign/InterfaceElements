@@ -28,7 +28,7 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
     var state: ChartView.CellState = .active(1) {
         didSet {
             switch state {
-            case .active(let xValue):
+            case .active:
                 barView.isHidden = false
                 barView.frame = barViewFrame
             case .dimmed:
@@ -50,7 +50,7 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
     
     // MARK: Subviews
     private lazy var barView: UIView = {
-        let v = UIView()
+        let v = makeRoundedView()
         v.backgroundColor = self.color
         return v
     }()
@@ -58,14 +58,15 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
     private lazy var backingBarView: UIView = {
         let v = makeRoundedView()
         v.backgroundColor = self.color
+        v.alpha = 0.2
         return v
     }()
     
-    private lazy var barMaskView: UIView = {
-        let v = makeRoundedView()
-        v.backgroundColor = .black
-        return v
-    }()
+//    private lazy var barMaskView: UIView = {
+//        let v = makeRoundedView()
+//        v.backgroundColor = .black
+//        return v
+//    }()
     
     
     private func makeRoundedView() -> UIView {
@@ -100,8 +101,8 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
     private func setup() {
         self.backgroundColor = .clear
         self.addSubview(backingBarView)
-        backingBarView.addSubview(barView)
-        barView.mask = barMaskView
+        self.addSubview(barView)
+//        barView.mask = barMaskView
     }
 
     private var backingBarViewFrame: CGRect {
@@ -111,7 +112,7 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
     
     private func updateFrame() {
         backingBarView.frame = backingBarViewFrame
-        barMaskView.frame = backingBarViewFrame
+//        barMaskView.frame = backingBarViewFrame
         barView.frame = barViewFrame
     }
     
@@ -119,7 +120,7 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
         switch state {
         case .dimmed: return .zero
         case .active(let xValue):
-            let width = backingBarViewFrame.width * CGFloat(xValue)
+            let width = self.bounds.width * CGFloat(xValue)
             return .init(x: 0, y: 0, width: width, height: backingBarViewFrame.height)
         }
     }

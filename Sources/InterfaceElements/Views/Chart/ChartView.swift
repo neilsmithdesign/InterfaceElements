@@ -19,7 +19,9 @@ public final class ChartView: UIView {
     public var mode: Mode = .interactive {
         didSet {
             collectionView.reloadData()
-            configureGestures()
+            if mode != oldValue {
+                configureGestures()                
+            }
         }
     }
     
