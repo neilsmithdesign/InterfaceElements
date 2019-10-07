@@ -22,6 +22,7 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
     var color: UIColor = .clear {
         didSet {
             barView.backgroundColor = color
+            backingBarView.backgroundColor = color
         }
     }
     
@@ -120,8 +121,11 @@ final class ChartBarCollectionViewCell: UICollectionViewCell {
         switch state {
         case .dimmed: return .zero
         case .active(let xValue):
+            let x = backingBarViewFrame.minX
+            let y = backingBarViewFrame.minY
             let width = self.bounds.width * CGFloat(xValue)
-            return .init(x: 0, y: 0, width: width, height: backingBarViewFrame.height)
+            let height = backingBarViewFrame.height
+            return .init(x: x, y: y, width: width, height: height)
         }
     }
     
