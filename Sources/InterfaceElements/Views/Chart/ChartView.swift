@@ -28,6 +28,10 @@ public final class ChartView: UIView {
         cell.state = state
     }
     
+    public func reload() {
+        collectionView.reloadData()
+    }
+    
     public func invalidateLayout() {
         collectionView.collectionViewLayout.invalidateLayout()
         for cell in collectionView.visibleCells {
