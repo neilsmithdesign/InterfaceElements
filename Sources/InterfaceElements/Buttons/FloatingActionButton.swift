@@ -20,20 +20,25 @@ public final class FloatingActionButton: UIControl {
         setColors(isHighlighted: isHighlighted)
     }
     
-    public var plusImageTintColor: UIColor = .label {
+    public private (set) var circleTintColor: UIColor = .secondarySystemBackground
+    public private (set) var highlightedCircleTintColor: UIColor = .systemBackground
+
+    public var iconKind: IconKind = .plus {
+        didSet {
+            self.iconImageView.image = iconKind.image
+        }
+    }
+    
+    public var iconTintColor: UIColor = .label {
         didSet {
             setColors(isHighlighted: isHighlighted)
         }
     }
     
-    public private (set) var circleTintColor: UIColor = .secondarySystemBackground
-    public private (set) var highlightedCircleTintColor: UIColor = .systemBackground
-    
     
     // MARK: Subviews
-    private lazy var plusImageView: UIImageView = {
-        let image = UIImage(systemName: "plus")
-        let iv = UIImageView(image: image)
+    private lazy var iconImageView: UIImageView = {
+        let iv = UIImageView(image: self.iconKind.image)
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.tintColor = .label
         iv.contentMode = .scaleAspectFit
@@ -103,16 +108,31 @@ public final class FloatingActionButton: UIControl {
     }
     
     private func constrainImageView() {
-        self.addSubview(plusImageView)
-        plusImageView.heightAnchor.constraint(equalToConstant: 32.0).isActive = true
-        plusImageView.widthAnchor.constraint(equalToConstant: 32.0).isActive = true
-        plusImageView.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-        plusImageView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        self.addSubview(iconImageView)
+        iconImageView.heightAnchor.constraint(equalToConstant: 32.0).isActive = true
+        iconImageView.widthAnchor.constraint(equalToConstant: 32.0).isActive = true
+        iconImageView.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+        iconImageView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
     }
 
     private func setColors(isHighlighted: Bool) {
         self.circleView.backgroundColor = isHighlighted ? highlightedCircleTintColor : circleTintColor
-        self.plusImageView.alpha = isHighlighted ? 0.6 : 1.0
+        self.iconImageView.alpha = isHighlighted ? 0.6 : 1.0
+    }
+    
+}
+
+public extension FloatingActionButton {
+    
+    enum IconKind {
+        case plus
+        case pencil
+        var image: UIImage? {
+            switch self {
+            case .plus: return UIImage(systemName: "plus")
+            case .pencil: return UIImage(systemName: "square.and.pencil")
+            }
+        }
     }
     
 }
