@@ -50,7 +50,7 @@ public final class FloatingActionButton: UIControl {
         v.isUserInteractionEnabled = false
         v.translatesAutoresizingMaskIntoConstraints = false
         v.backgroundColor = self.circleTintColor
-        v.layer.shadowColor = UIColor.black.cgColor
+        v.layer.shadowColor = UIColor.secondarySystemBackground.cgColor
         v.layer.shadowRadius = 8
         v.layer.shadowOpacity = 0.8
         v.layer.shadowOffset = .init(width: 0, height: 2)
