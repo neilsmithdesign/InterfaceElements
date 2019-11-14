@@ -72,6 +72,11 @@ public final class CircleButton: UIControl {
         self.layer.cornerRadius = self.bounds.height / 2
     }
     
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        self.layer.borderColor = color.cgColor
+    }
+    
     
     // MARK: Helpers
     private func setup() {

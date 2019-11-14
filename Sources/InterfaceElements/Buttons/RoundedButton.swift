@@ -95,6 +95,11 @@ public final class RoundedButton: UIButton {
         self.layer.cornerRadius = cornerRadius(for: shape)
     }
     
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        self.layer.borderColor = style.borderColor
+    }
+    
     private func setup() {
         self.setTitle(title, for: .normal)
         self.layer.masksToBounds = true

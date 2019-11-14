@@ -90,6 +90,11 @@ public final class FloatingActionButton: UIControl {
         selectionFeedback.prepare()
     }
     
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        circleView.layer.shadowColor = UIColor.secondarySystemBackground.cgColor
+    }
+    
     
     // MARK: Helpers
     private func setup() {
