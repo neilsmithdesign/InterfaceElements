@@ -7,7 +7,7 @@
 
 import UIKit
 
-public class AlwaysDarkViewController: UIViewController {
+open class AlwaysDarkViewController: UIViewController {
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)

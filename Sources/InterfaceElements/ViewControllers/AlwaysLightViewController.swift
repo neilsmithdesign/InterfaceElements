@@ -7,7 +7,7 @@
 
 import UIKit
 
-public class AlwaysLightViewController: UIViewController {
+open class AlwaysLightViewController: UIViewController {
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
