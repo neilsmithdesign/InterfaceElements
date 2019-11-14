@@ -97,7 +97,7 @@ public final class RoundedButton: UIButton {
     
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        self.layer.borderColor = style.borderColor
+        didUpdateStyle()
     }
     
     private func setup() {
