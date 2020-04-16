@@ -183,6 +183,7 @@ private extension RoundedButton {
         self.setBackgroundImage(style.backgroundImage, for: .normal)
         self.layer.borderColor = style.borderColor
         self.layer.borderWidth = style.borderWidth
+        self.layer.cornerCurve = .continuous
     }
     
 }
